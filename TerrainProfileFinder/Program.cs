@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.IO;
 namespace TerrainProfileFinder
 {
     class Program
@@ -19,11 +20,14 @@ namespace TerrainProfileFinder
 
             double[] terrainProfile = Heights(TxLocationLatitude, TxLocationLongitude, RxLocationLatitude, RxLocationLongtidue, terrainSpacingm);
 
+            StreamWriter sw = new StreamWriter(@"TestTerrain.csv");
+
             foreach (double elevation in terrainProfile)
             {
                 Console.WriteLine(elevation);
+                sw.WriteLine(elevation);
             }
-
+            sw.Close();
         }
         public static double[] Heights(double TxLocationLatitude, double TxLocationLongitude, double RxLocationLatitude, double RxLocationLongtiude, double spacingm)
         {
@@ -44,5 +48,5 @@ namespace TerrainProfileFinder
             return heights;
         }
     }
-    }
+    
 }
