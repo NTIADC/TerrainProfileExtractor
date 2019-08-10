@@ -41,8 +41,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TerrainDataReader">
-      <HintPath>..\..\TerrainDataReader\TerrainDataReader\bin\Debug\netstandard2.0\TerrainDataReader.dll</HintPath>
+    <Reference Include="TerrainDataReader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\TerrainDataReader.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
