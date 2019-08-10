@@ -11,41 +11,36 @@ namespace TerrainProfileFinder
     {
         static void Main(string[] args)
         {
-            double TxLocationLatitude = 42.99802;
-            double TxLocationLongitude = -79.03379;
-            double RxLocationLatitude = 42.99532;
-            double RxLocationLongtidue = -79.0095;
+            // setup the terrain reader, setting the path to where USGS data is found on disk
+            TerrainPcs.Terrain terrain = new TerrainPcs.USGS();
+            terrain.TerrainDataPath = @"C:\USGS\"; // make sure you download USGS data and set this path accordingly.
 
+            // create geolocations for our transmitter and receiver
+            TerrainPcs.Geolocation txLocation = new TerrainPcs.Geolocation(42.99802, -79.03379);
+            TerrainPcs.Geolocation rxLocation = new TerrainPcs.Geolocation(42.99532, -79.0095);
+
+            // set the spacing between height values (in meters)
             double terrainSpacingm = 90;
 
-            double[] terrainProfile = Heights(TxLocationLatitude, TxLocationLongitude, RxLocationLatitude, RxLocationLongtidue, terrainSpacingm);
+            // call the DLL, passing the start location, end location, how far apart to sample. The false is an
+            // internal configuration value.
+            double[] terrainProfile = terrain.GetPathElevationITM(txLocation, rxLocation, terrainSpacingm, false);
 
-            StreamWriter sw = new StreamWriter(@"TestTerrain.csv");
+            // The terrain profile also has some metadata embedded in it. The first element is the number of
+            // points /elements. This value will equal terrainProfile.Length - 2. The second element will be the
+            // terrain spacing that was passed to generate the profile (terrainSpacingm in this case)
+            int numberOfPoints = (int) (terrainProfile[0]);
 
-            foreach (double elevation in terrainProfile)
+            for (int i = 2; i < terrainProfile.Length; i++)
             {
-                Console.WriteLine(elevation);
-                sw.WriteLine(elevation);
+                // The terrain data starts at index 2 because of the metadata at the front of the array. So, we
+                // offset by two to get the actual distance away
+                double distanceAwayM = (i - 2) * terrainSpacingm;
+
+                Console.WriteLine("Height at {0}m away from transmitter is {1}m", distanceAwayM, terrainProfile[i]);
             }
-            sw.Close();
-        }
-        public static double[] Heights(double TxLocationLatitude, double TxLocationLongitude, double RxLocationLatitude, double RxLocationLongtiude, double spacingm)
-        {
-            TerrainPcs.Terrain terrain = new TerrainPcs.USGS();
-            terrain.TerrainDataPath = @"C:\USGS\";
 
-            TerrainPcs.Geolocation txLocation = new TerrainPcs.Geolocation();
-            TerrainPcs.Geolocation rxLocation = new TerrainPcs.Geolocation();
-
-            txLocation.Lat = TxLocationLatitude;
-            txLocation.Lon = TxLocationLongitude;
-
-            rxLocation.Lat = RxLocationLatitude;
-            rxLocation.Lon = RxLocationLongtiude;
-
-            double[] heights = terrain.GetPathElevationITM(rxLocation, txLocation, spacingm, false);
-
-            return heights;
+            Console.ReadKey();
         }
     }
     
